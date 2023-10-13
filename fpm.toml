@@ -1,0 +1,7 @@
+name = "AMPD"
+version = "1.0.0"
+license = "BSD-3-Clause"
+author = "左志华"
+maintainer = "左志华 (zuo.zhihua@qq.com)"
+copyright = "Copyright 2022-2023, 左志华"
+description = "Automatic multiscale-based peak detection (AMPD) algorithm"
