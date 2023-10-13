@@ -18,16 +18,14 @@ contains
     !> Automatic multiscale-based peak detection (AMPD) algorithm
     !> AMPD 峰值查找算法
     !> @note
-    !> - 由于移动窗体宽度的存在，序列两端的峰值不被查找，如果需要被查找需要填充最小值，extend = T
-    !> - 暂无法实时查找
     !> - 查询谷值，可将信号翻转后再查找
     pure function AMPD(data) result(location)
         real(rk), intent(in) :: data(:)                 !! Input data
                                                         !! 数据
-                                                        !! 峰值位置
-        integer :: L, N, k, i, row_sum, min_index, extend_size
+        integer, allocatable :: location(:)             !! 峰值位置
+        integer :: L, N, k, i, row_sum, min_index
         integer, allocatable :: arr_row_sum(:)
-        integer, allocatable :: p_data(:), location(:)
+        integer, allocatable :: p_data(:)
 
         ! 确定最佳窗体宽度
         N = size(data)
