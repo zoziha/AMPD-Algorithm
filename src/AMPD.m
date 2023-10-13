@@ -11,11 +11,7 @@ function location = AMPD(data)
     for k = 1:L
         row_sum = 0;
 
-        for i = k:N - k
-
-            if (i - k == 0 || i + k == N + 1)
-                continue;
-            end
+        for i = k + 1:N - k
 
             if (data(i) > data(i - k) && data(i) > data(i + k))
                 row_sum = row_sum - 1;
@@ -35,21 +31,14 @@ function location = AMPD(data)
 
     end
 
-    extend_width = min_index + 1;
-    N = N + 2 * extend_width;
     p_data = zeros(N, 1);
-    data_ = zeros(N, 1); data_(extend_width + 1:N - extend_width) = data;
 
     % 峰值查找
-    for k = 1:min_index + 1
+    for k = 1:min_index
 
-        for i = k:N - k
+        for i = k + 1:N - k
 
-            if (i - k == 0 || i + k == N + 1)
-                continue;
-            end
-
-            if (data_(i) > data_(i - k) && data_(i) >= data_(i + k))
+            if (data(i) > data(i - k) && data(i) >= data(i + k))
                 p_data(i) = p_data(i) + 1;
             end
 
@@ -57,5 +46,5 @@ function location = AMPD(data)
 
     end
 
-    location = find(p_data == max(max(p_data))) - extend_width;
+    location = find(p_data == min_index);
 end
