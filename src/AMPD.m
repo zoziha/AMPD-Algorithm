@@ -4,28 +4,27 @@
 % AMPD 峰值查找算法
 function location = AMPD(data)
     N = length(data);
-    L = N / 2 + 1;
+    L = N / 2;
     arr_row_sum = zeros(L, 1);
 
     % 确定最佳窗体宽度
     for k = 1:L
-        row_sum = 0;
 
         for i = k + 1:N - k
 
             if (data(i) > data(i - k) && data(i) > data(i + k))
-                row_sum = row_sum - 1;
+                arr_row_sum(k) = arr_row_sum(k) + 1;
             end
 
         end
 
-        arr_row_sum(k) = row_sum;
     end
 
+    max_value = max(max(arr_row_sum));
     for i = 1:L
 
-        if (arr_row_sum(i) == min(min(arr_row_sum)))
-            min_index = i;
+        if (arr_row_sum(i) == max_value)
+            max_index = i;
             break;
         end
 
@@ -34,7 +33,7 @@ function location = AMPD(data)
     p_data = zeros(N, 1);
 
     % 峰值查找
-    for k = 1:min_index
+    for k = 1:max_index
 
         for i = k + 1:N - k
 
@@ -46,5 +45,5 @@ function location = AMPD(data)
 
     end
 
-    location = find(p_data == min_index);
+    location = find(p_data == max_index);
 end

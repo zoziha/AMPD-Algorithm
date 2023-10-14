@@ -23,26 +23,24 @@ contains
         real(rk), intent(in) :: data(:)                 !! Input data
                                                         !! 数据
         integer, allocatable :: location(:)             !! 峰值位置
-        integer :: L, N, k, i, row_sum, min_index
+        integer :: L, N, k, i, max_index
         integer, allocatable :: arr_row_sum(:)
         integer, allocatable :: p_data(:)
 
         ! 确定最佳窗体宽度
         N = size(data)
-        L = N/2 + 1
-        allocate (arr_row_sum(L))
+        L = N/2
+        allocate (arr_row_sum(L), source=0)
         do k = 1, L
-            row_sum = 0
             do i = k + 1, N - k
-                if (data(i) > data(i - k) .and. data(i) > data(i + k)) row_sum = row_sum - 1
+                if (data(i) > data(i - k) .and. data(i) > data(i + k)) arr_row_sum(k) = arr_row_sum(k) + 1
             end do
-            arr_row_sum(k) = row_sum
         end do
-        min_index = minloc(arr_row_sum, dim=1) ! 通过最小值确定最佳窗体宽度，显著提升峰值特征，方便查找峰值
+        max_index = maxloc(arr_row_sum, dim=1) ! 通过最大值确定最佳窗体宽度，显著提升峰值特征，方便查找峰值
 
         ! 查找峰值
         allocate (p_data(N), source=0)
-        do k = 1, min_index
+        do k = 1, max_index
             do i = k + 1, N - k
                 if (data(i) > data(i - k) .and. data(i) > data(i + k)) p_data(i) = p_data(i) + 1
             end do
@@ -50,7 +48,7 @@ contains
 
         allocate (location(0))
         do i = 1, N
-            if (p_data(i) == min_index) location = [location, i]
+            if (p_data(i) == max_index) location = [location, i]
         end do
 
     end function AMPD

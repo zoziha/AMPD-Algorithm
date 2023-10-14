@@ -18,23 +18,26 @@ def AMPD(data):
         波峰所在索引值的列表
     """
     p_data = np.zeros_like(data, dtype=np.int32)
-    count = data.shape[0]
+    N = data.shape[0]
+    L = N // 2
 
     # 计算每个窗口的行和，并存储到arr_rowsum数组中
-    arr_rowsum = -np.ones(count // 2, dtype=np.int32)
-    for k in range(1, count // 2 + 1):
-        arr_rowsum[k - 1] = np.sum(
+    arr_rowsum = np.zeros(L, dtype=np.int32)
+    for k in range(1, L):
+        arr_rowsum[k] = np.sum(
             (data[k:-k] > data[k * 2 :]) & (data[k:-k] > data[: -k * 2])
-        ) * (-1)
+        )
 
-    # 找到最小的行和对应的窗口长度
-    min_index = np.argmin(arr_rowsum)
+    # 找到最大的行和对应的窗口长度
+    max_index = np.argmax(arr_rowsum)
 
     # 根据窗口长度计算波峰
-    for k in range(1, min_index + 1):
-        p_data[k:-k][(data[k:-k] > data[k * 2 :]) & (data[k:-k] > data[: -k * 2])] += 1
+    for k in range(1, max_index + 1):
+        p_data[k:-k][
+            (data[k:-k] > data[k * 2 :]) & (data[k:-k] > data[: -k * 2])
+        ] += 1  # 花式索引
 
-    return np.where(p_data == min_index)[0]
+    return np.where(p_data == max_index)[0]
 
 
 x = np.sin(np.arange(1, 30, 1) * 0.314)
